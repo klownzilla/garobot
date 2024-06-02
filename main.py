@@ -25,7 +25,7 @@ def main() -> None:
 
     garobot.set_service(shop.get_service_by_id(service_id))
     garobot.set_employee(shop.get_employee_by_id(employee_id))
-    garobot_scheduler.Scheduler(garobot, 60)
+    garobot_scheduler.Scheduler(garobot, 300)
 
 if __name__ == '__main__':
     main()

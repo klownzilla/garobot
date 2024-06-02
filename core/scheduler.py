@@ -26,6 +26,8 @@ class Scheduler:
                 self._set_best_appointment(best_appointment)
             else:
                 self.logger.info('Found no new best appointment...')
+                self.logger.info('Keeping appointment...')
+                self.logger.info('{}'.format(self._get_best_appointment()))
 
     def _get_garobot(self) -> Garobot:
         return self.garobot
