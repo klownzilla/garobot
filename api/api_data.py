@@ -1,4 +1,4 @@
-def get_shop_booking_data(business_id: int) -> dict:
+def get_shop_booking_data(business_id: int) -> dict[str, str]:
     post_data = {
         'businessID':business_id,
         'shouldIncludePakcage':'True',
@@ -11,7 +11,7 @@ def get_shop_booking_data(business_id: int) -> dict:
     }
     return post_data
 
-def get_shop_appointment_data(business_id: int, service_id: int, employee_id: int) -> dict:
+def get_shop_appointment_data(business_id: int, service_id: int, employee_id: int) -> dict[str, str]:
     post_data = {
         'lAppointmentID':'',
         'businessID':str(business_id),

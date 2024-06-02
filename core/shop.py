@@ -17,50 +17,46 @@ class Shop:
     def add_appointment(self, appointment: Appointment) -> None:
         self.get_appointments().append(appointment)
 
-    def get_service(self, service_id: int) -> Service:
+    def get_service_by_id(self, service_id: int) -> Service:
         services = self._get_services()
         for service in services:
             if service.get_service_id() == service_id:
                 return service
         return Service(0, '', 0, '')
     
-    def get_employee(self, employee_id: int) -> Employee:
+    def get_employee_by_id(self, employee_id: int) -> Employee:
         employees = self._get_employees()
         for employee in employees:
             if employee.get_employee_id() == employee_id:
                 return employee
         return Employee(0, '')
     
-    def get_appointment(self, appointment_date_time: datetime) -> Appointment:
+    def get_appointment_by_date_time(self, appointment_date_time: datetime) -> Appointment:
         appointments = self.get_appointments()
         for appointment in appointments:
             if appointment.get_appointment_date_time() == appointment_date_time:
                 return appointment
         return Appointment(0, datetime(2000, 1, 1), Service(0, '', 0, ''), Employee(0, ''))
 
-    def _get_services(self) -> set:
+    def _get_services(self) -> set[Service]:
         return self.shop_services
     
-    def _get_employees(self) -> set:
+    def _get_employees(self) -> set[Employee]:
         return self.shop_employees
     
-    def get_appointments(self) -> list:
+    def get_appointments(self) -> list[Appointment]:
         return self.shop_appointments
     
 class Employee:
     def __init__(self, id: int, name: str) -> None:
         self.employee_id = id
         self.employee_name = name
-        self.appointments = set()
 
     def get_employee_id(self) -> int:
         return self.employee_id
     
     def get_employee_name(self) -> str:
         return self.employee_name
-    
-    def get_appointments(self) -> set[Appointment]:
-        return self.appointments
     
     def __str__(self) -> str:
         obj_dict = {
@@ -122,4 +118,3 @@ class Appointment:
             'appointment_date':str(self.get_appointment_date_time()),
         }
         return json.dumps(obj_dict)
-

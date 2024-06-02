@@ -1,10 +1,10 @@
 import logging
-import garobot as garobot_core
-import api as garobot_api
-import shop as garobot_shop
-import scheduler as garobot_scheduler
+import core.garobot as garobot_core
+import api.api as garobot_api
+import core.shop as garobot_shop
+import core.scheduler as garobot_scheduler
 
-def main():
+def main() -> None:
     logging.basicConfig(level=logging.INFO,
                         format='{asctime} :: {levelname} :: {funcName} :: {message}',
                         style='{',
@@ -23,8 +23,8 @@ def main():
     service_id = 16663123
     employee_id = 44120875
 
-    garobot.set_service(shop.get_service(service_id))
-    garobot.set_employee(shop.get_employee(employee_id))
+    garobot.set_service(shop.get_service_by_id(service_id))
+    garobot.set_employee(shop.get_employee_by_id(employee_id))
     garobot_scheduler.Scheduler(garobot, 60)
 
 if __name__ == '__main__':

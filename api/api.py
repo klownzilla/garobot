@@ -1,6 +1,6 @@
 from __future__ import annotations
 import logging, requests, json
-from constants import API_URL, HEADER
+from core.constants import API_URL, HEADER
 
 class API:
     def __init__(self) -> None:
@@ -10,7 +10,7 @@ class API:
     def add_endpoint(self, endpoint: Endpoint) -> None:
         self._get_endpoints().add(endpoint)
 
-    def make_post_request(self, endpoint_identifier: str, post_data: dict) -> requests.Response:
+    def make_post_request(self, endpoint_identifier: str, post_data: dict[str, str]) -> requests.Response:
         endpoint = self._get_endpoint(endpoint_identifier)
         self.logger.debug('{},{},{}'.format(endpoint._get_full_url(), post_data, HEADER))
         request = requests.post(endpoint._get_full_url(), json=post_data, headers=HEADER)
