@@ -7,9 +7,9 @@ class Scheduler:
         self.logger = logging.getLogger(__name__)
         self.garobot = garobot
         self.frequency = frequency
-        self.watch_appointments()
+        self._watch_appointments()
 
-    def watch_appointments(self) -> None:
+    def _watch_appointments(self) -> None:
         self._get_garobot().populate_appointments()
         self._set_best_appointment(self._get_garobot().determine_best_appointment())
         self.logger.info('Current best appointment...')

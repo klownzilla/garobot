@@ -17,7 +17,7 @@ def get_shop_appointment_data(business_id: int, service_id: int, employee_id: in
         'businessID':str(business_id),
         'csvServiceID':str(service_id),
         'csvSPID':str(employee_id),
-        'AppDate':'Fri May-10-2024',
+        'AppDate':'Fri June-28-2024',
         'StyleID':None,
         'isPublic':True,
         'isOutcallAppointment':False,

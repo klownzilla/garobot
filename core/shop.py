@@ -1,9 +1,11 @@
 from __future__ import annotations
 from datetime import datetime
-import json
+import logging, json, random
 
 class Shop:
-    def __init__(self) -> None:
+    def __init__(self, business_id) -> None:
+        self.logger = logging.getLogger(__name__)
+        self.business_id = business_id
         self.shop_services = set()
         self.shop_employees = set()
         self.shop_appointments = []
@@ -17,26 +19,29 @@ class Shop:
     def add_appointment(self, appointment: Appointment) -> None:
         self.get_appointments().append(appointment)
 
-    def get_service_by_id(self, service_id: int) -> Service:
+    def get_service_by_id(self, service_id: int) -> Service|None:
         services = self._get_services()
         for service in services:
             if service.get_service_id() == service_id:
                 return service
-        return Service(0, '', 0, '')
+        return None
     
-    def get_employee_by_id(self, employee_id: int) -> Employee:
+    def get_employee_by_id(self, employee_id: int) -> Employee|None:
         employees = self._get_employees()
         for employee in employees:
             if employee.get_employee_id() == employee_id:
                 return employee
-        return Employee(0, '')
+        return None
     
-    def get_appointment_by_date_time(self, appointment_date_time: datetime) -> Appointment:
+    def get_appointment_by_date_time(self, appointment_date_time: datetime) -> Appointment|None:
         appointments = self.get_appointments()
         for appointment in appointments:
             if appointment.get_appointment_date_time() == appointment_date_time:
                 return appointment
-        return Appointment(0, datetime(2000, 1, 1), Service(0, '', 0, ''), Employee(0, ''))
+        return None
+    
+    def get_business_id(self) -> int:
+        return self.business_id
 
     def _get_services(self) -> set[Service]:
         return self.shop_services
@@ -46,6 +51,14 @@ class Shop:
     
     def get_appointments(self) -> list[Appointment]:
         return self.shop_appointments
+    
+    def generate_unique_appointment_id(self) -> int:
+        existing_appointment_ids = [appointment.get_appointment_id() for appointment in self.get_appointments()]
+        appointment_id = random.randint(0, 5000)
+        while appointment_id in existing_appointment_ids:
+            self.logger.debug('Duplicate ID {}! Retrying...'.format(appointment_id))
+            appointment_id = random.randint(0, 5000)
+        return appointment_id
     
 class Employee:
     def __init__(self, id: int, name: str) -> None:
