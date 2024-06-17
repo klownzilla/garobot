@@ -5,22 +5,36 @@ from api.constants import API_URL, HEADER, ENDPOINTS
 class API:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
+        self.session = requests.Session()
         self.endpoints = set()
+        self._set_request_headers()
 
     def regiser_endpoints(self) -> None:
+        self.logger.info('Start registering endpoints...')
         for endpoint_identifier, endpoint_value in ENDPOINTS.items():
             self.logger.debug('{},{}'.format(endpoint_identifier, endpoint_value))
             endpoint = Endpoint(endpoint_identifier, endpoint_value)
             self._add_endpoint(endpoint)
-
-    def _add_endpoint(self, endpoint: Endpoint) -> None:
-        self._get_endpoints().add(endpoint)
+        self.logger.info('Done registering endpoints!')
 
     def make_post_request(self, endpoint_identifier: str, post_data: dict[str, str]) -> requests.Response:
         endpoint = self._get_endpoint(endpoint_identifier)
-        self.logger.debug('{},{},{}'.format(endpoint._get_full_url(), post_data, HEADER))
-        request = requests.post(endpoint._get_full_url(), json=post_data, headers=HEADER)
+        self.logger.debug('{},{}'.format(endpoint._get_full_url(), post_data))
+        request = self._get_session().post(endpoint._get_full_url(), json=post_data)
         return request
+    
+    def _get_session(self) -> requests.Session:
+        return self.session
+    
+    def _set_request_headers(self) -> None:
+        self._get_session().headers.update(HEADER)
+
+    def close_session(self) -> None:
+        self.logger.info('Closing session...')
+        self._get_session().close()
+
+    def _add_endpoint(self, endpoint: Endpoint) -> None:
+        self._get_endpoints().add(endpoint)
 
     def _get_endpoint(self, endpoint_identifier: str) -> Endpoint:
         endpoints = self._get_endpoints()

@@ -4,6 +4,7 @@ from datetime import datetime
 from core.shop import *
 from api.api import API
 import api.api_data as api_data
+from core.constants import APPOINTMENT_ID_LENGTH
 
 class Garobot:
     def __init__(self, shop: Shop, api: API) -> None:
@@ -14,7 +15,7 @@ class Garobot:
     def _get_shop(self) -> Shop:
         return self.shop
     
-    def _get_api(self) -> API:
+    def get_api(self) -> API:
         return self.api
     
     def _get_service(self) -> Service:
@@ -32,7 +33,7 @@ class Garobot:
     def _populate_shop_api_call(self) -> tuple[dict[Any, str], dict[Any, str]]:
         try:
             self.logger.debug('Trying populate shop API call...')
-            req = self._get_api().make_post_request('get_bookings',
+            req = self.get_api().make_post_request('get_bookings',
                                                     api_data.get_shop_booking_data(
                                                         self._get_shop().get_business_id()
                                                     ))
@@ -71,7 +72,7 @@ class Garobot:
     def _populate_appointments_api_call(self) -> tuple[str, list[str]]:
         try:
             self.logger.debug('Trying populate appointments API call...')
-            req = self._get_api().make_post_request('get_appointments',
+            req = self.get_api().make_post_request('get_appointments',
                                                     api_data.get_shop_appointment_data(
                                                         self._get_shop().get_business_id(),
                                                         self._get_service().get_service_id(),
@@ -92,22 +93,22 @@ class Garobot:
         self.logger.debug('Populate appointments API call success!')
         return available_date, available_times
 
-    def populate_appointments(self) -> None:
+    def populate_appointments(self) -> bool:
         self.logger.info('Start populating appointments...')
         available_date, available_times = self._populate_appointments_api_call()
         appointments_before = self._get_shop().get_appointments().copy()
 
         for time in available_times:
-            available_date_time = available_date + " " + time
+            available_date_time = available_date + ' ' + time
             try:
                 appointment_date_time = datetime.strptime(available_date_time, '%d %b %Y %H:%M %p')
             except ValueError as e:
                 self.logger.error(e)
                 raise SystemExit(e)
-            appointment = Appointment(self._get_shop().generate_unique_appointment_id(), appointment_date_time, self._get_service(), self._get_employee())
+            appointment = Appointment(self._get_shop().generate_unique_appointment_id(APPOINTMENT_ID_LENGTH), appointment_date_time, self._get_service(), self._get_employee())
             existing_appointment = self._get_shop().get_appointment_by_date_time(appointment_date_time)
             if existing_appointment is not None and appointment.get_appointment_date_time() == existing_appointment.get_appointment_date_time():
-                self.logger.info('Found existing appointment! Skipping...')
+                self.logger.debug('Found existing appointment! Skipping...')
             else:
                 self._get_shop().add_appointment(appointment)
         appointments_after = self._get_shop().get_appointments()
@@ -116,15 +117,16 @@ class Garobot:
             self.logger.info('Found new appointment!')
             for new_appointment in appointments_after:
                 if new_appointment not in appointments_before:
-                    self.logger.debug(new_appointment)
+                    self.logger.info(new_appointment)
         elif len(appointments_before) > len(appointments_after):
             self.logger.info('Lost appointment!')
             for old_appointment in appointments_before:
                 if old_appointment not in appointments_after:
-                    self.logger.debug(old_appointment)
+                    self.logger.info(old_appointment)
         else:
             self.logger.info('No new appointments...')
-        self.logger.info('Done populating appointments!')
+            return False
+        return True
 
     def determine_best_appointment(self) -> Appointment:
         self.logger.info('Determining best appointment...')

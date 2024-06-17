@@ -52,13 +52,10 @@ class Shop:
     def get_appointments(self) -> list[Appointment]:
         return self.shop_appointments
     
-    def generate_unique_appointment_id(self) -> int:
-        existing_appointment_ids = [appointment.get_appointment_id() for appointment in self.get_appointments()]
-        appointment_id = random.randint(0, 5000)
-        while appointment_id in existing_appointment_ids:
-            self.logger.debug('Duplicate ID {}! Retrying...'.format(appointment_id))
-            appointment_id = random.randint(0, 5000)
-        return appointment_id
+    def generate_unique_appointment_id(self, id_length) -> int:
+        lower = 10**(id_length - 1)
+        upper = (10**id_length) - 1
+        return random.randint(lower, upper)
     
 class Employee:
     def __init__(self, id: int, name: str) -> None:
@@ -113,21 +110,23 @@ class Appointment:
         self.service = service
         self.employee = employee
 
-    def get_appointment_id(self) -> int:
+    def _get_appointment_id(self) -> int:
         return self.appointment_id
     
     def get_appointment_date_time(self) -> datetime:
         return self.appointment_date_time
     
-    def get_appointment_service(self) -> Service:
+    def _get_appointment_service(self) -> Service:
         return self.service
     
-    def get_appointment_employee(self) -> Employee:
+    def _get_appointment_employee(self) -> Employee:
         return self.employee
     
     def __str__(self) -> str:
         obj_dict = {
-            'appointment_id':self.get_appointment_id(),
-            'appointment_date':str(self.get_appointment_date_time()),
+            'appointment_id':self._get_appointment_id(),
+            'appointment_date_time':self.get_appointment_date_time().strftime('%a %b %d %H:%M %Y'),
+            'service':self._get_appointment_service().__dict__,
+            'employee':self._get_appointment_employee().__dict__
         }
         return json.dumps(obj_dict)

@@ -1,6 +1,7 @@
 import logging, time
 from core.garobot import Garobot
 from core.shop import Appointment
+from core.webhook import Webhook
 
 class Scheduler:
     def __init__(self, garobot: Garobot, frequency: int) -> None:
@@ -10,24 +11,29 @@ class Scheduler:
         self._watch_appointments()
 
     def _watch_appointments(self) -> None:
-        self._get_garobot().populate_appointments()
-        self._set_best_appointment(self._get_garobot().determine_best_appointment())
-        self.logger.info('Current best appointment...')
-        self.logger.info('{}'.format(self._get_best_appointment()))
-
+        first = True
         while True:
-            self.logger.info('Sleeping for {} seconds...'.format(self._get_frequency()))
-            time.sleep(self._get_frequency())
-
-            self._get_garobot().populate_appointments()
-            best_appointment = self._get_garobot().determine_best_appointment()
-            if best_appointment != self._get_best_appointment():
-                self.logger.info('Setting new best appointment...')
-                self._set_best_appointment(best_appointment)
+            found_appointment = self._get_garobot().populate_appointments()
+            if found_appointment:
+                best_appointment = self._get_garobot().determine_best_appointment()
+                if first or best_appointment != self._get_best_appointment():
+                    first = False
+                    self.logger.info('Found new best appointment!')
+                    self._set_best_appointment(best_appointment)
+                    self.logger.info('{}'.format(self._get_best_appointment()))
+                    Webhook().notify_channel(self._get_best_appointment())
             else:
-                self.logger.info('Found no new best appointment...')
                 self.logger.info('Keeping appointment...')
                 self.logger.info('{}'.format(self._get_best_appointment()))
+
+            try:
+                self.logger.info('Sleeping for {} seconds...'.format(self._get_frequency()))
+                time.sleep(self._get_frequency())
+                self.logger.info('Done sleeping!')
+            except KeyboardInterrupt:
+                self.logger.info('Keyboard interrupt! Exiting...')
+                self._get_garobot().get_api().close_session()
+                raise SystemExit()
 
     def _get_garobot(self) -> Garobot:
         return self.garobot

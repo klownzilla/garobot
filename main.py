@@ -3,10 +3,11 @@ from core.garobot import Garobot
 from core.shop import Shop
 from core.scheduler import Scheduler
 from api.api import API
+from core.constants import FREQUENCY
 
 def init_logger() -> None:
     logging.basicConfig(level=logging.INFO,
-                        format='{asctime} :: {levelname} :: {funcName} :: {message}',
+                        format='{asctime} :: {levelname} :: {module} :: {funcName} :: {message}',
                         style='{',
                         handlers=[
                             logging.StreamHandler()
@@ -32,7 +33,7 @@ def main() -> None:
     if selected_service is not None and selected_employee is not None:
         garobot.set_service(selected_service)
         garobot.set_employee(selected_employee)
-        Scheduler(garobot, 300)
+        Scheduler(garobot, FREQUENCY)
     else:
         logging.error('Unable to find service or employee!')
         raise SystemExit()
