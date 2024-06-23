@@ -12,14 +12,19 @@ class API:
     def regiser_endpoints(self) -> None:
         self.logger.info('Start registering endpoints...')
         for endpoint_identifier, endpoint_value in ENDPOINTS.items():
-            self.logger.debug('{},{}'.format(endpoint_identifier, endpoint_value))
+            self.logger.debug('{},{}'.format(
+                endpoint_identifier,
+                endpoint_value
+                ))
             endpoint = Endpoint(endpoint_identifier, endpoint_value)
             self._add_endpoint(endpoint)
         self.logger.info('Done registering endpoints!')
 
     def make_post_request(self, endpoint_identifier: str, post_data: dict[str, str]) -> requests.Response:
         endpoint = self._get_endpoint(endpoint_identifier)
-        self.logger.debug('{},{}'.format(endpoint._get_full_url(), post_data))
+        self.logger.debug('{},{}'.format(endpoint._get_full_url(),
+                                         post_data
+                                         ))
         request = self._get_session().post(endpoint._get_full_url(), json=post_data)
         return request
     
@@ -66,4 +71,3 @@ class Endpoint:
             'value':self._get_value()
         }
         return json.dumps(obj_dict)
-        

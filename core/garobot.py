@@ -2,9 +2,10 @@ import logging, requests.exceptions
 from typing import Any
 from datetime import datetime
 from core.shop import *
+from core.constants import APPOINTMENT_ID_LENGTH
+from core.utils import *
 from api.api import API
 import api.api_data as api_data
-from core.constants import APPOINTMENT_ID_LENGTH
 
 class Garobot:
     def __init__(self, shop: Shop, api: API) -> None:
@@ -36,7 +37,7 @@ class Garobot:
             req = self.get_api().make_post_request('get_bookings',
                                                     api_data.get_shop_booking_data(
                                                         self._get_shop().get_business_id()
-                                                    ))
+                                                        ))
         except requests.exceptions.RequestException as e:
             self.logger.error(e)
             raise SystemExit(e)
@@ -56,16 +57,16 @@ class Garobot:
         shop_service_list, shop_employee_list = self._populate_shop_api_call()
         for shop_service in shop_service_list:
             service = Service(shop_service['serviceID'],
-                                            shop_service['serviceTitle'],
-                                            shop_service['price'],
-                                            shop_service['serviceDesc']
-                                            )
+                              shop_service['serviceTitle'],
+                              shop_service['price'],
+                              shop_service['serviceDesc']
+                              )
             self._get_shop().add_service(service)
         
         for shop_employee in shop_employee_list:
             employee = Employee(shop_employee['id'],
-                                              shop_employee['text']
-                                              )
+                                shop_employee['text']
+                                )
             self._get_shop().add_employee(employee)
         self.logger.info('Done populating shop!')
 
@@ -77,7 +78,7 @@ class Garobot:
                                                         self._get_shop().get_business_id(),
                                                         self._get_service().get_service_id(),
                                                         self._get_employee().get_employee_id()
-                                                    ))
+                                                        ))
         except requests.exceptions.RequestException as e:
             self.logger.error(e)
             raise SystemExit(e)
@@ -105,7 +106,7 @@ class Garobot:
             except ValueError as e:
                 self.logger.error(e)
                 raise SystemExit(e)
-            appointment = Appointment(self._get_shop().generate_unique_appointment_id(APPOINTMENT_ID_LENGTH), appointment_date_time, self._get_service(), self._get_employee())
+            appointment = Appointment(generate_unique_id(APPOINTMENT_ID_LENGTH), appointment_date_time, self._get_service(), self._get_employee())
             existing_appointment = self._get_shop().get_appointment_by_date_time(appointment_date_time)
             if existing_appointment is not None and appointment.get_appointment_date_time() == existing_appointment.get_appointment_date_time():
                 self.logger.debug('Found existing appointment! Skipping...')

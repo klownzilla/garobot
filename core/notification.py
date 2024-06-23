@@ -1,9 +1,10 @@
-import logging, requests, random, json
+import logging, requests, json
 from datetime import datetime
 from core.shop import Appointment
 from core.constants import WEBHOOK_URL, WEBHOOK_USERNAME, WEBHOOK_RGB_INT, WEBHOOK_NOTIFICATION_REF_LENGTH
+from core.utils import *
 
-class Webhook:
+class Notification:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
@@ -21,10 +22,10 @@ class Webhook:
 
     def _prepare_data(self, appointment: Appointment) -> dict:
         appointment_dict = json.loads(str(appointment))
-        webhook_description = 'Date: {}\nService: {}\nPrice: ${:2.2f}\nEmployee: {}\nAppointment ID: {}'.format(
+        webhook_description = 'Date: {}\nService: [${:2.2f}] {}\nEmployee: {}\nAppointment ID: {}'.format(
             appointment_dict['appointment_date_time'],
-            appointment_dict['service']['service_name'],
             appointment_dict['service']['service_price'],
+            appointment_dict['service']['service_name'],
             appointment_dict['employee']['employee_name'],
             appointment_dict['appointment_id']
         )
@@ -36,15 +37,12 @@ class Webhook:
                     'title':'Found new best appointment!',
                     'color':WEBHOOK_RGB_INT,
                     'footer':{
-                        'text':'Notificaton sent on {}\nNotif. Ref.: {}'.format(datetime.now().strftime('%a %b %d %H:%M:%S %Y'),
-                                                                                     self._generate_unique_notification_id(WEBHOOK_NOTIFICATION_REF_LENGTH))
+                        'text':'Notificaton sent on {}\nNotif. Ref.: {}'.format(
+                            datetime.now().strftime('%a %b %d %H:%M:%S %Y'),
+                            generate_unique_id(WEBHOOK_NOTIFICATION_REF_LENGTH)
+                            )
                     }
                 }
             ]
         }
         return post_data
-
-    def _generate_unique_notification_id(self, id_length) -> int:
-        lower = 10**(id_length - 1)
-        upper = (10**id_length) - 1
-        return random.randint(lower, upper)

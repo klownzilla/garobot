@@ -1,7 +1,7 @@
 import logging, time
 from core.garobot import Garobot
 from core.shop import Appointment
-from core.webhook import Webhook
+from core.notification import Notification
 
 class Scheduler:
     def __init__(self, garobot: Garobot, frequency: int) -> None:
@@ -21,7 +21,7 @@ class Scheduler:
                     self.logger.info('Found new best appointment!')
                     self._set_best_appointment(best_appointment)
                     self.logger.info('{}'.format(self._get_best_appointment()))
-                    Webhook().notify_channel(self._get_best_appointment())
+                    Notification().notify_channel(self._get_best_appointment())
             else:
                 self.logger.info('Keeping appointment...')
                 self.logger.info('{}'.format(self._get_best_appointment()))

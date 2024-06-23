@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
-import logging, json, random
+import logging, json
 
 class Shop:
     def __init__(self, business_id) -> None:
@@ -51,11 +51,6 @@ class Shop:
     
     def get_appointments(self) -> list[Appointment]:
         return self.shop_appointments
-    
-    def generate_unique_appointment_id(self, id_length) -> int:
-        lower = 10**(id_length - 1)
-        upper = (10**id_length) - 1
-        return random.randint(lower, upper)
     
 class Employee:
     def __init__(self, id: int, name: str) -> None:
