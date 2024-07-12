@@ -1,6 +1,8 @@
-APPOINTMENT_ID_LENGTH = 16
+# Length of appointment ids
+APPOINTMENT_ID_LENGTH = 8
+
+# Schedule frequency in seconds
 FREQUENCY = 300
-WEBHOOK_URL = '[discord webhook here]'
-WEBHOOK_USERNAME = 'garobot_py_bot'
-WEBHOOK_RGB_INT = 13387588
-WEBHOOK_NOTIFICATION_REF_LENGTH = 32
+
+# Add variation in schedule frequency to aid in detection
+FREQUENCY_VARIATION = 15

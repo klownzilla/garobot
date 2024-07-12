@@ -1,39 +1,41 @@
 from __future__ import annotations
+from typing import Optional
 from datetime import datetime
 import logging, json
 
+logger = logging.getLogger(__name__)
+
 class Shop:
     def __init__(self, business_id) -> None:
-        self.logger = logging.getLogger(__name__)
         self.business_id = business_id
         self.shop_services = set()
         self.shop_employees = set()
         self.shop_appointments = []
 
     def add_service(self, service: Service) -> None:
-        self._get_services().add(service)
+        self.get_services().add(service)
 
     def add_employee(self, employee: Employee) -> None:
-        self._get_employees().add(employee)
+        self.get_employees().add(employee)
 
     def add_appointment(self, appointment: Appointment) -> None:
         self.get_appointments().append(appointment)
 
-    def get_service_by_id(self, service_id: int) -> Service|None:
-        services = self._get_services()
+    def get_service_by_id(self, service_id: int) -> Optional[Service]:
+        services = self.get_services()
         for service in services:
             if service.get_service_id() == service_id:
                 return service
         return None
     
-    def get_employee_by_id(self, employee_id: int) -> Employee|None:
-        employees = self._get_employees()
+    def get_employee_by_id(self, employee_id: int) -> Optional[Employee]:
+        employees = self.get_employees()
         for employee in employees:
             if employee.get_employee_id() == employee_id:
                 return employee
         return None
     
-    def get_appointment_by_date_time(self, appointment_date_time: datetime) -> Appointment|None:
+    def get_appointment_by_date_time(self, appointment_date_time: datetime) -> Optional[Appointment]:
         appointments = self.get_appointments()
         for appointment in appointments:
             if appointment.get_appointment_date_time() == appointment_date_time:
@@ -43,10 +45,10 @@ class Shop:
     def get_business_id(self) -> int:
         return self.business_id
 
-    def _get_services(self) -> set[Service]:
+    def get_services(self) -> set[Service]:
         return self.shop_services
     
-    def _get_employees(self) -> set[Employee]:
+    def get_employees(self) -> set[Employee]:
         return self.shop_employees
     
     def get_appointments(self) -> list[Appointment]:

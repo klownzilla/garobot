@@ -1,24 +1,24 @@
 import logging, requests, json
 from datetime import datetime
 from core.shop import Appointment
-from core.constants import WEBHOOK_URL, WEBHOOK_USERNAME, WEBHOOK_RGB_INT, WEBHOOK_NOTIFICATION_REF_LENGTH
+from api.constants import WEBHOOK_URL, WEBHOOK_USERNAME, WEBHOOK_RGB_INT, WEBHOOK_NOTIFICATION_REF_LENGTH
 from core.utils import *
 
+logger = logging.getLogger(__name__)
+
 class Notification:
-    def __init__(self) -> None:
-        self.logger = logging.getLogger(__name__)
 
     def notify_channel(self, appointment: Appointment) -> None:
         post_data = self._prepare_data(appointment)
-        self.logger.info('Sending notification to channel...')
+        logger.info('Sending notification to channel...')
         webhook_response = requests.post(WEBHOOK_URL, json=post_data)
         try:
             webhook_response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            self.logger.error(e)
+            logger.error(e)
             raise SystemExit(e)
         else:
-            self.logger.info('Notification successfully sent!')
+            logger.info('Notification successfully sent!')
 
     def _prepare_data(self, appointment: Appointment) -> dict:
         appointment_dict = json.loads(str(appointment))
@@ -34,7 +34,7 @@ class Notification:
             'embeds':[
                 {
                     'description':webhook_description,
-                    'title':'Found new best appointment!',
+                    'title':'**Found new best appointment!**',
                     'color':WEBHOOK_RGB_INT,
                     'footer':{
                         'text':'Notificaton sent on {}\nNotif. Ref.: {}'.format(
