@@ -13,7 +13,8 @@ def init_logger() -> None:
                         ])
     
 def handle_service_employee_input(shop: Shop) -> tuple[int, int]:
-    for service in shop.get_services():
+    services = sorted(shop.get_services(), key=lambda x: x.service_name)
+    for service in services:
         print('Service ID: {}\nService name: {}\nService price: {}\n'.format(service.get_service_id(),
                                                                              service.get_service_name(),
                                                                              service.get_service_price()
@@ -21,7 +22,8 @@ def handle_service_employee_input(shop: Shop) -> tuple[int, int]:
     print('Enter service id: ')
     service_id = int(input().strip())
 
-    for employee in shop.get_employees():
+    employees = sorted(shop.get_employees(), key=lambda x: x.employee_name)
+    for employee in employees:
         print('Employee ID: {}\nEmployee name: {}\n'.format(employee.get_employee_id(),
                                                             employee.get_employee_name()
                                                             ))
