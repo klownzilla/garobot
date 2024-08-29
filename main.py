@@ -46,14 +46,18 @@ def main() -> None:
     service_id, employee_id = handle_service_employee_input(shop)
 
     selected_service = shop.get_service_by_id(service_id)
-    selected_employee = shop.get_employee_by_id(employee_id)
-    if selected_service is not None and selected_employee is not None:
-        garobot.set_service(selected_service)
-        garobot.set_employee(selected_employee)
-        Scheduler(garobot)
-    else:
-        logging.error('Unable to find service or employee!')
+    if selected_service is None:
+        logging.error('Unable to find service!')
         raise SystemExit()
+    garobot.set_service(selected_service)
+
+    selected_employee = shop.get_employee_by_id(employee_id)
+    if selected_employee is None:
+        logging.error('Unable to find employee!')
+        raise SystemExit()
+    garobot.set_employee(selected_employee)
+
+    Scheduler(garobot)
 
 if __name__ == '__main__':
     main()
